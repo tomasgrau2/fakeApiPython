@@ -1,26 +1,28 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, Numeric, String
 from sqlalchemy.orm import relationship
 
 from .database import Base
 
 
-class User(Base):
-    __tablename__ = "users"
+class Product(Base):
+    __tablename__ = "product"
 
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
-    is_active = Column(Boolean, default=True)
+    titulo = Column(String,nullable=False)
+    precio_compra = Column(Numeric(precision=10, scale=2),nullable=False)
+    descripcion = Column(String)
+    categoria = Column(String)
+    url_imagen = Column(String)
 
-    items = relationship("Item", back_populates="owner")
+    rating = relationship('Rating', uselist=False, back_populates='product', cascade='all, delete-orphan')
 
 
-class Item(Base):
-    __tablename__ = "items"
+class Rating(Base):
+    __tablename__ = "rating"
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, index=True)
-    description = Column(String, index=True)
-    owner_id = Column(Integer, ForeignKey("users.id"))
-
-    owner = relationship("User", back_populates="items")
+    rate = Column(Numeric(precision=10, scale=2), nullable=False)
+    count = Column(Integer)
+   
+    product_id = Column(Integer, ForeignKey('product.id'))  
+    product = relationship('Product', back_populates='rating')

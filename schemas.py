@@ -1,36 +1,41 @@
-from typing import Union
-
 from pydantic import BaseModel
+from decimal import Decimal
 
-class ItemBase(BaseModel):
-    title: str
-    description: Union[str, None] = None
+# Esquema Pydantic para la clase Product
+class ProductBase(BaseModel):
+    titulo: str
+    precio_compra: Decimal
+    descripcion: str = None
+    categoria: str = None
+    url_imagen: str = None
 
-
-class ItemCreate(ItemBase):
+class ProductCreate(ProductBase):
     pass
 
+class ProductUpdate(ProductBase):
+    pass
 
-class Item(ItemBase):
+class Product(ProductBase):
     id: int
-    owner_id: int
+    rating: "Rating" # Relación con la clase Rating
 
     class Config:
-        from_attributes = True
+        orm_mode = True
 
+# Esquema Pydantic para la clase Rating
+class RatingBase(BaseModel):
+    rate: Decimal
+    count: int
 
-class UserBase(BaseModel):
-    email: str
+class RatingCreate(RatingBase):
+    pass
 
+class RatingUpdate(RatingBase):
+    pass
 
-class UserCreate(UserBase):
-    password: str
-
-
-class User(UserBase):
+class Rating(RatingBase):
     id: int
-    is_active: bool
-    items: list[Item] = []
+    product: Product  # Relación con la clase Product
 
     class Config:
-        from_attributes = True
+        orm_mode = True
